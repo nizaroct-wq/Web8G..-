@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kelas 8G - Music Galaxy</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #0a0a1a;
+            color: #fff;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Background Galaxy */
+        #galaxy-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            background: radial-gradient(ellipse at center, #0a0a2a 0%, #000010 70%);
+            overflow: hidden;
+        }
+
+        .star {
+            position: absolute;
+            background-color: white;
+            border-radius: 50%;
+        }
+
+        .star.small {
+            width: 1px;
+            height: 1px;
+            opacity: 0.7;
+        }
+
+        .star.medium {
+            width: 2px;
+            height: 2px;
+            opacity: 0.9;
+        }
+
+        .star.large {
+            width: 3px;
+            height: 3px;
+            opacity: 1;
+        }
+
+        .nebula {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(60px);
+            opacity: 0.3;
+        }
+
+        /* Header & Navigation */
+        header {
+            padding: 20px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(10, 10, 40, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(100, 100, 255, 0.2);
+            position: relative;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(90deg, #9d4edd, #5a189a);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .logo span {
+            color: #ff9e00;
+        }
+
+        /* Admin Menu */
+        .admin-menu {
+            position: relative;
+        }
+
+        .admin-toggle {
+            background: rgba(30, 30, 70, 0.7);
+            border: 1px solid rgba(100, 100, 255, 0.3);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            font-size: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .admin-toggle:hover {
+            background: rgba(50, 50, 120, 0.9);
+            transform: scale(1.05);
+        }
+
+        .admin-panel {
+            position: absolute;
+            top: 60px;
+            right: 0;
+            background: rgba(15, 15, 40, 0.95);
+            border: 1px solid rgba(100, 100, 255, 0.3);
+            border-radius: 10px;
+            padding: 20px;
+            width: 300px;
+            display: none;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+
+        .admin-panel h3 {
+            color: #9d4edd;
+            margin-bottom: 15px;
+            text-align: center;
+            border-bottom: 1px solid rgba(157, 78, 221, 0.3);
+            padding-bottom: 10px;
+        }
+
+        .admin-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .form-group label {
+            font-size: 0.9rem;
+            color: #aaa;
+        }
+
+        .form-group input {
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid rgba(100, 100, 255, 0.3);
+            background: rgba(30, 30, 60, 0.8);
+            color: white;
+        }
+
+        .admin-btn {
+            background: linear-gradient(90deg, #9d4edd, #5a189a);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .admin-btn:hover {
+            background: linear-gradient(90deg, #b565ff, #7b2cbf);
+            transform: translateY(-2px);
+        }
+
+        .admin-controls {
+            margin-top: 20px;
+            display: none;
+        }
+
+        .admin-controls h4 {
+            color: #ff9e00;
+            margin-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 158, 0, 0.3);
+            padding-bottom: 5px;
+        }
+
+        .change-photo, .change-music {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .photo-item, .music-item {
+            background: rgba(30, 30, 60, 0.8);
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid rgba(100, 100, 255, 0.2);
+        }
+
+        /* Main Content */
+        .hero {
+            text-align: center;
+            padding: 60px 5% 40px;
+            position: relative;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, #9d4edd, #5a189a, #ff9e00);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 20px rgba(157, 78, 221, 0.5);
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: #aaa;
+            max-width: 800px;
+            margin: 0 auto 30px;
+            line-height: 1.6;
+        }
+
+        /* Pengurus Kelas */
+        .pengurus {
+            padding: 40px 5%;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 30px;
+        }
+
+        .pengurus-card {
+            background: rgba(20, 20, 50, 0.7);
+            border-radius: 15px;
+            padding: 25px;
+            width: 300px;
+            text-align: center;
+            border: 1px solid rgba(100, 100, 255, 0.2);
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .pengurus-card:hover {
+            transform: translateY(-10px);
+            border-color: rgba(157, 78, 221, 0.5);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .pengurus-card h3 {
+            color: #9d4edd;
+            margin-bottom: 10px;
+            font-size: 1.5rem;
+        }
+
+        .pengurus-card p {
+            color: #ff9e00;
+            font-weight: 600;
+            font-size: 1.2rem;
+        }
+
+        .wali-kelas {
+            border-top: 3px solid #9d4edd;
+        }
+
+        .ketua {
+            border-top: 3px solid #ff9e00;
+        }
+
+        .wakil {
+            border-top: 3px solid #00b4d8;
+        }
+
+        /* Galeri Foto */
+        .galeri {
+            padding: 40px 5%;
+            text-align: center;
+        }
+
+        .galeri h2 {
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+            color: #9d4edd;
+        }
+
+        .foto-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .foto-item {
+            position: relative;
+            border-radius: 15px;
+            overflow: hidden;
+            height: 250px;
+            border: 2px solid rgba(100, 100, 255, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .foto-item:hover {
+            transform: scale(1.03);
+            border-color: rgba(157, 78, 221, 0.7);
+        }
+
+        .foto-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .foto-desc {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 15px;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+        }
+
+        .foto-item:hover .foto-desc {
+            transform: translateY(0);
+        }
+
+        /* Audio Player */
+        .audio-player {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(15, 15, 40, 0.9);
+            border-radius: 10px;
+            padding: 15px;
+            width: 300px;
+            border: 1px solid rgba(100, 100, 255, 0.3);
+            backdrop-filter: blur(10px);
+            z-index: 100;
+        }
+
+        .audio-player h4 {
+            color: #ff9e00;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .audio-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .audio-btn {
+            background: #9d4edd;
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.2rem;
+        }
+
+        .audio-btn:hover {
+            background: #b565ff;
+        }
+
+        .volume-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .volume-control i {
+            color: #9d4edd;
+        }
+
+        .volume-slider {
+            flex-grow: 1;
+        }
+
+        .song-info {
+            font-size: 0.9rem;
+            color: #aaa;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 30px 5%;
+            margin-top: 50px;
+            border-top: 1px solid rgba(100, 100, 255, 0.2);
+            color: #888;
+            font-size: 0.9rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .pengurus {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .audio-player {
+                width: calc(100% - 40px);
+                right: 20px;
+                left: 20px;
+            }
+            
+            .admin-panel {
+                width: calc(100vw - 40px);
+                right: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Background Galaxy -->
+    <div id="galaxy-bg"></div>
+
+    <!-- Header & Admin Menu -->
+    <header>
+        <div class="logo">Kelas <span>8G</span> Nih</div>
+        
+        <div class="admin-menu">
+            <div class="admin-toggle" id="adminToggle">
+                <i class="fas fa-bars"></i>
+            </div>
+            
+            <div class="admin-panel" id="adminPanel">
+                <h3>Admin Login</h3>
+                <div class="admin-form" id="loginForm">
+                    <div class="form-group">
+                        <label for="username">Username</label>
+                        <input type="text" id="username" placeholder="Masukkan username">
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" placeholder="Masukkan password">
+                    </div>
+                    <button class="admin-btn" id="loginBtn">Login</button>
+                </div>
+                
+                <div class="admin-controls" id="adminControls">
+                    <h4>Admin Controls</h4>
+                    
+                    <div class="change-photo">
+                        <div class="photo-item">
+                            <p>Foto 1</p>
+                            <input type="text" id="photo1-url" placeholder="URL foto baru">
+                            <button class="admin-btn change-photo-btn" data-photo="1">Ganti Foto</button>
+                        </div>
+                        <div class="photo-item">
+                            <p>Foto 2</p>
+                            <input type="text" id="photo2-url" placeholder="URL foto baru">
+                            <button class="admin-btn change-photo-btn" data-photo="2">Ganti Foto</button>
+                        </div>
+                        <div class="photo-item">
+                            <p>Foto 3</p>
+                            <input type="text" id="photo3-url" placeholder="URL foto baru">
+                            <button class="admin-btn change-photo-btn" data-photo="3">Ganti Foto</button>
+                        </div>
+                        <div class="photo-item">
+                            <p>Foto 4</p>
+                            <input type="text" id="photo4-url" placeholder="URL foto baru">
+                            <button class="admin-btn change-photo-btn" data-photo="4">Ganti Foto</button>
+                        </div>
+                    </div>
+                    
+                    <div class="change-music">
+                        <h4>Pilih Lagu</h4>
+                        <div class="music-item">
+                            <p>Everything You Are</p>
+                            <button class="admin-btn select-song" data-song="https://files.catbox.moe/udcpji.mp3">Pilih</button>
+                        </div>
+                        <div class="music-item">
+                            <p>Abadi</p>
+                            <button class="admin-btn select-song" data-song="https://files.catbox.moe/b3tc7x.mp3">Pilih</button>
+                        </div>
+                        <div class="music-item">
+                            <p>Jakarta Hari Ini</p>
+                            <button class="admin-btn select-song" data-song="https://files.catbox.moe/oy9jc7.mp3">Pilih</button>
+                        </div>
+                    </div>
+                    
+                    <button class="admin-btn" id="logoutBtn">Logout</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <section class="hero">
+            <h1>Selamat Datang di Kelas 8G</h1>
+            <p>Kelas dengan semangat kreativitas,Di sini, kita belajar, bertumbuh, dan menciptakan kenangan tak terlupakan bersama. Setiap hari adalah petualangan baru dalam galaksi pengetahuan!</p>
+        </section>
+
+        <section class="pengurus">
+            <div class="pengurus-card wali-kelas">
+                <h3>Wali Kelas</h3>
+                <p>Rizka Diana Putri</p>
+                <p></p>
+            </div>
+            
+            <div class="pengurus-card ketua">
+                <h3>Ketua Kelas</h3>
+                <p>Fairel</p>
+                <p></p>
+            </div>
+            
+            <div class="pengurus-card wakil">
+                <h3>Wakil Ketua Kelas</h3>
+                <p>Ergy</p>
+                <p></p>
+            </div>
+        </section>
+
+        <section class="galeri">
+            <h2>Galeri 8G</h2>
+            <p>Momen Berharga Foto bersama anak anak 8G </p>
+            
+            <div class="foto-container">
+                <div class="foto-item">
+                    <img src="https://files.catbox.moe/1gtg0g.jpg" alt="Kegiatan Musik 1" id="photo1">
+                    <div class="foto-desc">
+                        <p>Momen Foto Bersama Bu Rizka Anak laki laki</p>
+                    </div>
+                </div>
+                
+                <div class="foto-item">
+                    <img src="https://files.catbox.moe/xav5d8.jpg" alt="Kegiatan Musik 2" id="photo2">
+                    <div class="foto-desc">
+                        <p>Waktu Foto bareng Bu rizka bareng anak anak</p>
+                    </div>
+                </div>
+                
+                <div class="foto-item">
+                    <img src="https://files.catbox.moe/rj5cru.jpg" alt="Kegiatan Musik 3" id="photo3">
+                    <div class="foto-desc">
+                        <p>Foto Bersama</p>
+                    </div>
+                </div>
+                
+                <div class="foto-item">
+                    <img src="https://files.catbox.moe/uaji9u.jpg" alt="Kegiatan Musik 4" id="photo4">
+                    <div class="foto-desc">
+                        <p>Waktu Lomba Sekelas Lomba Paduan suara🤣</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Audio Player -->
+    <div class="audio-player">
+        <h4>Latar Belakang Musik</h4>
+        <div class="audio-controls">
+            <button class="audio-btn" id="playBtn">
+                <i class="fas fa-play"></i>
+            </button>
+            <button class="audio-btn" id="pauseBtn">
+                <i class="fas fa-pause"></i>
+            </button>
+            <div class="volume-control">
+                <i class="fas fa-volume-up"></i>
+                <input type="range" min="0" max="100" value="50" class="volume-slider" id="volumeSlider">
+            </div>
+        </div>
+        <div class="song-info" id="songTitle">Memutar: The winners</div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>© 2025 Kelas 8G Semua hak cipta dilindungi.</p>
+        <p>Dibuat Oleh Vyèè Dan @ztheos (orang nya sama🤡😹k</p>
+    </footer>
+
+    <!-- Audio Element -->
+    <audio id="backgroundMusic" loop>
+        <source src="https://files.catbox.moe/35y825.mp3" type="audio/mpeg">
+        Browser Anda tidak mendukung elemen audio.
+    </audio>
+
+    <script>
+        // Inisialisasi variabel
+        const adminToggle = document.getElementById('adminToggle');
+        const adminPanel = document.getElementById('adminPanel');
+        const loginForm = document.getElementById('loginForm');
+        const adminControls = document.getElementById('adminControls');
+        const loginBtn = document.getElementById('loginBtn');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const usernameInput = document.getElementById('username');
+        const passwordInput = document.getElementById('password');
+        const changePhotoButtons = document.querySelectorAll('.change-photo-btn');
+        const selectSongButtons = document.querySelectorAll('.select-song');
+        
+        // Elemen audio
+        const backgroundMusic = document.getElementById('backgroundMusic');
+        const playBtn = document.getElementById('playBtn');
+        const pauseBtn = document.getElementById('pauseBtn');
+        const volumeSlider = document.getElementById('volumeSlider');
+        const songTitle = document.getElementById('songTitle');
+        
+        // Status login
+        let isLoggedIn = false;
+        
+        // Background galaxy
+        function createGalaxy() {
+            const galaxyBg = document.getElementById('galaxy-bg');
+            
+            // Buat bintang-bintang
+            for (let i = 0; i < 200; i++) {
+                const star = document.createElement('div');
+                star.classList.add('star');
+                
+                // Tentukan ukuran bintang
+                const size = Math.random();
+                if (size < 0.6) star.classList.add('small');
+                else if (size < 0.9) star.classList.add('medium');
+                else star.classList.add('large');
+                
+                // Posisi acak
+                star.style.left = `${Math.random() * 100}%`;
+                star.style.top = `${Math.random() * 100}%`;
+                
+                // Animasi berkedip
+                const duration = 2 + Math.random() * 3;
+                star.style.animation = `twinkle ${duration}s infinite alternate`;
+                
+                galaxyBg.appendChild(star);
+            }
+            
+            // Buat nebula
+            for (let i = 0; i < 5; i++) {
+                const nebula = document.createElement('div');
+                nebula.classList.add('nebula');
+                
+                // Warna nebula acak
+                const colors = ['#9d4edd', '#5a189a', '#ff9e00', '#00b4d8'];
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                nebula.style.backgroundColor = color;
+                
+                // Ukuran dan posisi
+                const size = 100 + Math.random() * 300;
+                nebula.style.width = `${size}px`;
+                nebula.style.height = `${size}px`;
+                nebula.style.left = `${Math.random() * 100}%`;
+                nebula.style.top = `${Math.random() * 100}%`;
+                
+                galaxyBg.appendChild(nebula);
+            }
+        }
+        
+        // Toggle admin panel
+        adminToggle.addEventListener('click', () => {
+            adminPanel.style.display = adminPanel.style.display === 'block' ? 'none' : 'block';
+        });
+        
+        // Login function
+        loginBtn.addEventListener('click', () => {
+            const username = usernameInput.value;
+            const password = passwordInput.value;
+            
+            if (username === 'Vye' && password === 'Vye123') {
+                isLoggedIn = true;
+                loginForm.style.display = 'none';
+                adminControls.style.display = 'block';
+                alert('Login berhasil! Selamat datang, Admin.');
+            } else {
+                alert('Username atau password salah!');
+            }
+        });
+        
+        // Logout function
+        logoutBtn.addEventListener('click', () => {
+            isLoggedIn = false;
+            adminControls.style.display = 'none';
+            loginForm.style.display = 'flex';
+            usernameInput.value = '';
+            passwordInput.value = '';
+            alert('Anda telah logout.');
+        });
+        
+        // Ganti foto
+        changePhotoButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                if (!isLoggedIn) {
+                    alert('Silakan login terlebih dahulu!');
+                    return;
+                }
+                
+                const photoNum = button.getAttribute('data-photo');
+                const urlInput = document.getElementById(`photo${photoNum}-url`);
+                const newUrl = urlInput.value;
+                
+                if (newUrl) {
+                    const photoElement = document.getElementById(`photo${photoNum}`);
+                    photoElement.src = newUrl;
+                    urlInput.value = '';
+                    alert(`Foto ${photoNum} berhasil diganti!`);
+                } else {
+                    alert('Masukkan URL foto terlebih dahulu!');
+                }
+            });
+        });
+        
+        // Pilih lagu
+        selectSongButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                if (!isLoggedIn) {
+                    alert('Silakan login terlebih dahulu!');
+                    return;
+                }
+                
+                const songUrl = button.getAttribute('data-song');
+                const songName = button.parentElement.querySelector('p').textContent;
+                
+                backgroundMusic.src = songUrl;
+                songTitle.textContent = `Memutar: ${songName}`;
+                
+                // Coba putar lagu baru
+                backgroundMusic.play().then(() => {
+                    playBtn.style.display = 'none';
+                    pauseBtn.style.display = 'flex';
+                    alert(`Lagu berhasil diganti ke: ${songName}`);
+                }).catch(error => {
+                    console.log('Autoplay diblokir:', error);
+                    alert(`Lagu diganti ke: ${songName}. Klik tombol play untuk memulai.`);
+                });
+            });
+        });
+        
+        // Kontrol audio
+        playBtn.addEventListener('click', () => {
+            backgroundMusic.play();
+            playBtn.style.display = 'none';
+            pauseBtn.style.display = 'flex';
+        });
+        
+        pauseBtn.addEventListener('click', () => {
+            backgroundMusic.pause();
+            playBtn.style.display = 'flex';
+            pauseBtn.style.display = 'none';
+        });
+        
+        // Kontrol volume
+        volumeSlider.addEventListener('input', () => {
+            backgroundMusic.volume = volumeSlider.value / 100;
+        });
+        
+        // Inisialisasi background galaxy
+        createGalaxy();
+        
+        // Tambahkan style untuk animasi bintang
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes twinkle {
+                0% { opacity: 0.3; }
+                100% { opacity: 1; }
+            }
+        `;
+        document.head.appendChild(style);
+        
+        // Tutup admin panel ketika klik di luar
+        document.addEventListener('click', (event) => {
+            if (!adminPanel.contains(event.target) && !adminToggle.contains(event.target)) {
+                adminPanel.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
